@@ -22,7 +22,7 @@ rds_handler = RDSHandler(secret_arn=SECRET_ARN, resource_arn=DB_CLUSTER_ARN)
 api_handler = APIHandler()
 data_processor = DataProcessor()
 
-if True:
+if False:
     rds_handler.build_schema_and_tables_query()
 
 

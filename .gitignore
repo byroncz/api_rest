@@ -17,7 +17,7 @@ ENV/
 env.bak/
 venv.bak/
 .devcontainer/
-.tmp/
+tmp/
 
 # CDK Context & Staging files
 .cdk.staging/
