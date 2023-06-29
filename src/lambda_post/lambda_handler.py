@@ -22,9 +22,6 @@ rds_handler = RDSHandler(secret_arn=SECRET_ARN, resource_arn=DB_CLUSTER_ARN)
 api_handler = APIHandler()
 data_processor = DataProcessor()
 
-if False:
-    rds_handler.build_schema_and_tables_query()
-
 
 def insertion_job(event):
     
@@ -57,19 +54,11 @@ def insertion_job(event):
     
     results = rds_handler.execute_sql(insert_query)
     return api_handler.create_response(200, f"OK. Data insertada.")
-
-
-def deliver_metric(event):
-    pass
 
 
 def handler(event, context):
     
     logger.info(json.dumps(event))
     
-    if event['httpMethod'] == 'POST':
-        return insertion_job(event) 
+    return insertion_job(event) 
         
-    if event['httpMethod'] == 'GET':
-        return deliver_metric(event) 
-    

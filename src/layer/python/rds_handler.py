@@ -27,33 +27,6 @@ class RDSHandler:
         query += ', '.join(value_placeholders)
 
         return query
-        
-    def build_schema_and_tables_query(self):
-        self.execute_sql("""
-            CREATE SCHEMA IF NOT EXISTS replica;
-            
-            DROP TABLE IF EXISTS replica.hired_employees;
-            CREATE TABLE replica.hired_employees (
-                id INTEGER UNIQUE,
-                name VARCHAR(255),
-                datetime VARCHAR(255),
-                department_id INTEGER,
-                job_id INTEGER
-            );
-            
-            DROP TABLE IF EXISTS replica.departments;
-            CREATE TABLE replica.departments (
-                id INTEGER UNIQUE,
-                department VARCHAR(255)
-            );
-            
-            DROP TABLE IF EXISTS replica.jobs;
-            CREATE TABLE replica.jobs (
-                id INTEGER UNIQUE,
-                job VARCHAR(255)
-            );
-            """
-        )
 
     def execute_sql(self, sql_query):
         

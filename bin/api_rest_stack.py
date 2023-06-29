@@ -7,7 +7,8 @@ from aws_cdk import (
     aws_apigateway as apigw,
     aws_ec2 as ec2,
     aws_rds as rds,
-    aws_secretsmanager as secretsmanager
+    aws_secretsmanager as secretsmanager,
+    triggers
 )
 
 import json
@@ -41,7 +42,7 @@ class ApiRestStack(Stack):
         )
 
         # Create relational database
-        db_cluster = rds.ServerlessCluster(self, 'database',
+        db_cluster = rds.ServerlessCluster(self, 'Database',
             engine=rds.DatabaseClusterEngine.aurora_postgres(
                 version=rds.AuroraPostgresEngineVersion.VER_13_3
             ),
@@ -52,32 +53,79 @@ class ApiRestStack(Stack):
             credentials=rds.Credentials.from_secret(secret=secret),
             default_database_name='apirest',
             enable_data_api=True, 
-            removal_policy=RemovalPolicy.RETAIN
+            removal_policy=RemovalPolicy.DESTROY,
+            deletion_protection=False
         )
         
-        # Defines an AWS Lambda resource
-        api_rest_lambda = _lambda.Function(
-            self, 'Handler',
+        lambdaLayer = _lambda.LayerVersion(self, 'LambdaLayer',
+            code = _lambda.AssetCode('src/layer'),
+            compatible_runtimes = [_lambda.Runtime.PYTHON_3_10],
+        ) 
+        
+        table_creator_lambda = triggers.TriggerFunction(self, "MyTrigger",
             runtime=_lambda.Runtime.PYTHON_3_10,
-            code=_lambda.Code.from_asset('src/lambda'),
             handler='lambda_handler.handler',
+            code=_lambda.Code.from_asset('src/lambda_creator'),
             vpc=vpc,
-            timeout=Duration.seconds(10),
+            timeout=Duration.seconds(120),
+            layers=[lambdaLayer],
             environment={
                 'DB_CLUSTER_ARN': db_cluster.cluster_arn,
                 'SECRET_ARN': secret.secret_arn
             }
         )
         
-        secret.grant_read(grantee=api_rest_lambda)
-        db_cluster.grant_data_api_access(api_rest_lambda)
+        secret.grant_read(grantee=table_creator_lambda)
+        db_cluster.grant_data_api_access(table_creator_lambda)        
+        
+        table_creator_lambda.execute_after(db_cluster)
+        
+        # Defines an AWS Lambda POST resource
+        api_rest_post_lambda = _lambda.Function(
+            self, 'LambdaPostHandler',
+            runtime=_lambda.Runtime.PYTHON_3_10,
+            code=_lambda.Code.from_asset('src/lambda_post'),
+            handler='lambda_handler.handler',
+            vpc=vpc,
+            timeout=Duration.seconds(120),
+            layers=[lambdaLayer],
+            environment={
+                'DB_CLUSTER_ARN': db_cluster.cluster_arn,
+                'SECRET_ARN': secret.secret_arn
+            }
+        )
+        
+        secret.grant_read(grantee=api_rest_post_lambda)
+        db_cluster.grant_data_api_access(api_rest_post_lambda)
+        
+        # Defines an AWS Lambda GET resource
+        api_rest_get_lambda = _lambda.Function(
+            self, 'LambdaGetHandler',
+            runtime=_lambda.Runtime.PYTHON_3_10,
+            code=_lambda.Code.from_asset('src/lambda_get'),
+            handler='lambda_handler.handler',
+            vpc=vpc,
+            timeout=Duration.seconds(120),
+            layers=[lambdaLayer],
+            environment={
+                'DB_CLUSTER_ARN': db_cluster.cluster_arn,
+                'SECRET_ARN': secret.secret_arn
+            }
+        )
+        
+        secret.grant_read(grantee=api_rest_get_lambda)
+        db_cluster.grant_data_api_access(api_rest_get_lambda)
         
         # Use apigw API Rest construct
         api = apigw.LambdaRestApi(
             self, 'Endpoint',
-            handler=api_rest_lambda,
+            handler=api_rest_post_lambda,
         )
         
         # Add a resource to the API and a method to the resource
         section_1 = api.root.add_resource('section_1')
-        section_1.add_method('POST', apigw.LambdaIntegration(api_rest_lambda))
+        section_1.add_method('POST', apigw.LambdaIntegration(api_rest_post_lambda))
+        
+        # Add a resource to the API and a method to the resource
+        section_2 = api.root.add_resource('section_2')
+        section_2.add_method('GET', apigw.LambdaIntegration(api_rest_get_lambda))
