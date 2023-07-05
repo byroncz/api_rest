@@ -35,17 +35,17 @@
 #     --data-urlencode "Tabla=hired_employees" \
 #     https://rbwdwmrim8.execute-api.us-east-2.amazonaws.com/prod/ 
 
-# echo "Running for hired employees"
-# echo ""
-# curl -X GET \
-#     -H "Content-Type: text/csv" \
-#     https://rbwdwmrim8.execute-api.us-east-2.amazonaws.com/prod/section_1?requirements=employees
-# echo ""
+echo "Running for hired employees"
+echo ""
+curl -X GET \
+    -H "Content-Type: application/json" \
+    https://rbwdwmrim8.execute-api.us-east-2.amazonaws.com/prod/test?requirements=employees
+echo ""
 
-# echo "Running for hired ids"
-# echo ""
-# curl -X GET \
-#     -H "Content-Type: text/csv" \
-#     https://rbwdwmrim8.execute-api.us-east-2.amazonaws.com/prod/section_1?requirements=ids
-# echo ""
-# echo ""
+echo "Running for hired ids"
+echo ""
+curl -X GET \
+    -H "Content-Type: text/csv" \
+    https://rbwdwmrim8.execute-api.us-east-2.amazonaws.com/prod/test?requirements=ids
+echo ""
+echo ""

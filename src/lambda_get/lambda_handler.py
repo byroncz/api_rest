@@ -17,13 +17,11 @@ rds_handler = RDSHandler(secret_arn=SECRET_ARN, resource_arn=DB_CLUSTER_ARN)
 
 def deliver_metric(query):
     results = rds_handler.execute_sql(query)
-    print(json.dumps(results['records']))
     return api_handler.create_response(200, results['records'])
-
+    
 
 def handler(event, context):
     
-    logger.info('Construyendo métrica.')
     if event['queryStringParameters']['requirements'] == 'employees':
         logger.info(f"Construyendo métrica -employees-.")
         return deliver_metric("""
