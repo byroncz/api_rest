@@ -29,9 +29,9 @@ def handler(event, context):
             d.department, 
             j.job, 
             COUNT(CASE WHEN EXTRACT(MONTH FROM to_timestamp(he.datetime, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AT TIME ZONE 'UTC') BETWEEN 1 AND 3 THEN 'Q1' END) AS Q1,
-            COUNT(CASE WHEN EXTRACT(MONTH FROM to_timestamp(he.datetime, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AT TIME ZONE 'UTC') BETWEEN 4 AND 6 THEN 'Q1' END) AS Q2,
-            COUNT(CASE WHEN EXTRACT(MONTH FROM to_timestamp(he.datetime, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AT TIME ZONE 'UTC') BETWEEN 7 AND 9 THEN 'Q1' END) AS Q3,
-            COUNT(CASE WHEN EXTRACT(MONTH FROM to_timestamp(he.datetime, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AT TIME ZONE 'UTC') BETWEEN 10 AND 12 THEN 'Q1' END) AS Q4
+            COUNT(CASE WHEN EXTRACT(MONTH FROM to_timestamp(he.datetime, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AT TIME ZONE 'UTC') BETWEEN 4 AND 6 THEN 'Q2' END) AS Q2,
+            COUNT(CASE WHEN EXTRACT(MONTH FROM to_timestamp(he.datetime, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AT TIME ZONE 'UTC') BETWEEN 7 AND 9 THEN 'Q3' END) AS Q3,
+            COUNT(CASE WHEN EXTRACT(MONTH FROM to_timestamp(he.datetime, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AT TIME ZONE 'UTC') BETWEEN 10 AND 12 THEN 'Q4' END) AS Q4
         FROM replica.hired_employees he
         JOIN replica.departments d ON d.id=he.department_id
         JOIN replica.jobs j ON j.id=he.job_id
@@ -46,7 +46,7 @@ def handler(event, context):
         SELECT 
             d.id,
             d.department
-            numero_2022
+            numero_2022 AS hired
         FROM (
             SELECT 
                 department_id,
