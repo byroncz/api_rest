@@ -123,9 +123,6 @@ class ApiRestStack(Stack):
         )
         
         # Add a resource to the API and a method to the resource
-        section_1 = api.root.add_resource('section_1')
-        section_1.add_method('POST', apigw.LambdaIntegration(api_rest_post_lambda))
-        
-        # Add a resource to the API and a method to the resource
-        section_2 = api.root.add_resource('section_2')
-        section_2.add_method('GET', apigw.LambdaIntegration(api_rest_get_lambda))
+        test = api.root.add_resource('test')
+        test.add_method('POST', apigw.LambdaIntegration(api_rest_post_lambda))
+        test.add_method('GET', apigw.LambdaIntegration(api_rest_get_lambda))

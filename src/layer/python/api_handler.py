@@ -11,7 +11,6 @@ class APIHandler:
     def get_data(self, event):
         if "body" in event and event["body"]:
             raw_data = event["body"].split('&')
-            print(raw_data[1].split('Tabla='))
             return raw_data[0], raw_data[1].split('Tabla=')[1]
         else:
             logger.error("No se proporcionó el cuerpo de la solicitud.")

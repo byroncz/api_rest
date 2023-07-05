@@ -8,10 +8,19 @@ logger = logger.setup_logger()
 
 class DataProcessor:
 
-    def process_csv(self, csv_data_location):
+    def process_csv(self, expression, csv_data):
         processed_data = []
-        reader = csv.reader(csv_data_location.splitlines())
+        reader = csv.reader(csv_data.splitlines())
         for row in reader:
-            # Realizar cualquier manipulación o transformación necesaria en los datos
-            processed_data.append(row)
+            formatted_row = self.format_strings(expression, row)
+            processed_data.append(formatted_row)
         return processed_data
+    
+    def format_strings(self, expression, row):
+        row_formatted = []
+        for i in range(len(expression)):
+            if expression[i]:
+                row_formatted.append("'" + row[i] + "'" if row[i] else 'null')
+                continue
+            row_formatted.append(row[i] if row[i] else 'null')
+        return ','.join(row_formatted)

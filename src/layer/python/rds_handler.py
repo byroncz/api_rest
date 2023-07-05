@@ -13,16 +13,17 @@ class RDSHandler:
         self.secret_arn = secret_arn
         self.resource_arn = resource_arn
         self.rds_data_client = boto3.client('rds-data')
+        
+    def build_batch_insert(self, table_name, column_names, values):
+        devided_values = [values[i:i+10] for i in range(0, len(values), 10)]
+        return [self.build_insert_query(table_name, column_names, value ) for value in devided_values]
 
     def build_insert_query(self, table_name, column_names, values):
-
-        logger.info("Creando base INSERT query.")
         query = f"INSERT INTO {table_name} ({', '.join(column_names)}) VALUES "
         
         value_placeholders = []
         for row in values:
-            str_row = ', '.join(row)
-            value_placeholders.append(f"({str_row})")
+            value_placeholders.append(f"({row})")
 
         query += ', '.join(value_placeholders)
 
@@ -38,7 +39,8 @@ class RDSHandler:
             'includeResultMetadata': True
         }
         logger.info("Accediendo a la base datos.")
-        try:
-            return self.rds_data_client.execute_statement(**sql_params)
-        except:
-            logger.exception("Se ha presentado un error al momento de acceder a la base de datos.")
+        # try:
+        return self.rds_data_client.execute_statement(**sql_params)
+        # except:
+        #     logger.exception("Se ha presentado un error al momento de acceder a la base de datos.")
+    
