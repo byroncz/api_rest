@@ -1,34 +1,32 @@
-from aws_cdk import (
-        Stack,
-        aws_lambda as _lambda,
-        assertions
-    )
-from bin.api_rest_stack import ApiRestStack
 import pytest
 
+from aws_cdk import core
+from constructs import Construct
+from bin.api_rest_stack import ApiRestStack
 
-def test_lambda_function_created():
-    stack = Stack()
-    ApiRestStack(stack, 'ApiRestStack')
-    template = assertions.Template.from_stack(stack)
-    template.resource_count_is("AWS::IAM::Role", 0)
+
+def test_api_rest_stack_init():
+    # Test that ApiRestStack initializes without throwing an exception
+    app = core.App()
+    ApiRestStack(app, "MyTestStack")
+
     
-    
-# def test_lambda_has_env_vars():
-#     stack = Stack()
-#     ApiRestStack(stack, "ApiRestStack")
-
-#     template = assertions.Template.from_stack(stack)
-#     envCapture = assertions.Capture()
-
-#     template.has_resource_properties("AWS::Lambda::Function", {
-#         "Handler": "lambda_handler.handler",
-#         "Environment": envCapture,
-#         })
-
-#     assert envCapture.as_object() == {
-#             "Variables": {
-#                 "DOWNSTREAM_FUNCTION_NAME": {"Ref": "downstream.function_name,"},
-#                 "HITS_TABLE_NAME": {"Ref": "self._table.table_name"},
-#                 },
-#             }
+def test_api_rest_stack_resources():
+    # Test that ApiRestStack creates the correct resources
+    app = core.App()
+    stack = ApiRestStack(app, "MyTestStack")
+     # Assert VPC resource is created
+    assert len(stack.node.find_all_children('vpc')) == 1
+     # Assert Secrets Manager Endpoint is created
+    assert len(stack.node.find_all_children('sm')) == 1
+     # Assert RDS Data API Endpoint is created
+    assert len(stack.node.find_all_children('rds_data')) == 1
+     # Assert DB Cluster is created
+    assert len(stack.node.find_all_children('Database')) == 1
+     # Assert Lambda Layer is created
+    assert len(stack.node.find_all_children('LambdaLayer')) == 1
+     # Assert Lambda Functions are created
+    assert len(stack.node.find_all_children('LambdaPostHandler')) == 1
+    assert len(stack.node.find_all_children('LambdaGetHandler')) == 1
+     # Assert API Gateway is created
+    assert len(stack.node.find_all_children('Endpoint')) == 1

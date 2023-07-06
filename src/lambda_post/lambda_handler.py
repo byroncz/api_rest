@@ -62,8 +62,11 @@ def insertion_job(event):
 
 
 def handler(event, context):
-    
-    # logger.info(json.dumps(event))
-    
+    """
+    Handle an event and context by calling the `insertion_job` function with the event as an argument.
+    @param event - the event to handle
+    @param context - the context of the event
+    @return the result of the `insertion_job` function
+    """
     return insertion_job(event) 
         

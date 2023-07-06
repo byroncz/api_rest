@@ -1,7 +1,3 @@
-# The `ApiRestStack` class represents a stack of AWS resources including a VPC, Secrets Manager
-# Endpoint, RDS Data API Endpoint, a secret for DB Cluster, a relational database, a Lambda layer, and
-# two Lambda functions (POST and GET). It also includes the necessary resources and methods for an API
-# Gateway REST API.
 from constructs import Construct
 from aws_cdk import (
     Stack,
