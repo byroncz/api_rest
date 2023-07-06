@@ -8,7 +8,10 @@ DATABASE = 'apirest'
 
 
 class RDSHandler:
-    
+    """
+    The `RDSHandler` class provides methods for building and executing SQL queries on an RDS database
+    using the `boto3` library.
+    """
     def __init__(self, secret_arn, resource_arn):
         self.secret_arn = secret_arn
         self.resource_arn = resource_arn

@@ -1,4 +1,5 @@
 from rds_handler import RDSHandler
+
 from api_handler import APIHandler
 from data_processor import DataProcessor
 
@@ -34,7 +35,14 @@ data_processor = DataProcessor()
 
 
 def insertion_job(event):
+    """
+    The code defines a Lambda function that handles the insertion of data into an RDS database based on
+    an API request.
     
+    :param event: The `event` parameter is the input data passed to the Lambda function. It can contain
+    information such as the HTTP request headers, body, and other relevant data
+    :return: The `handler` function returns the result of the `insertion_job` function.
+    """
     csv_data, table_name = api_handler.get_data(event)
     if table_name not in list(TABLES.keys()):
         return api_handler.create_response(400, f"Error. tabla no disponible: {table_name}")

@@ -1,3 +1,4 @@
+
 import csv
 
 import logger
@@ -7,7 +8,10 @@ logger = logger.setup_logger()
 
 
 class DataProcessor:
-
+    """
+    The `DataProcessor` class provides methods for processing CSV data by formatting strings based on an
+    expression.
+    """
     def process_csv(self, expression, csv_data):
         processed_data = []
         reader = csv.reader(csv_data.splitlines())

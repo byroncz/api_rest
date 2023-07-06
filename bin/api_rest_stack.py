@@ -1,3 +1,7 @@
+# The `ApiRestStack` class represents a stack of AWS resources including a VPC, Secrets Manager
+# Endpoint, RDS Data API Endpoint, a secret for DB Cluster, a relational database, a Lambda layer, and
+# two Lambda functions (POST and GET). It also includes the necessary resources and methods for an API
+# Gateway REST API.
 from constructs import Construct
 from aws_cdk import (
     Stack,
@@ -15,6 +19,20 @@ import json
 
 
 class ApiRestStack(Stack):
+    """
+    A subclass of the Stack class from the AWS CDK library. This class represents a stack of AWS resources.
+    This stack includes a VPC, Secrets Manager Endpoint, RDS Data API Endpoint, a secret for DB Cluster, 
+    a relational database, a Lambda layer, and two Lambda functions (POST and GET). It also includes the 
+    necessary resources and methods for an API Gateway REST API.
+
+    Attributes:
+    scope (Construct): the scope in which this stack is defined.
+    id (str): the id of this stack.
+    **kwargs: additional arguments.
+
+    Methods:
+    __init__(scope: Construct, id: str, **kwargs): Constructs a new instance of the ApiRestStack class.
+    """
 
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
@@ -57,11 +75,13 @@ class ApiRestStack(Stack):
             deletion_protection=False
         )
         
+        # Create cross Lambda Layer
         lambdaLayer = _lambda.LayerVersion(self, 'LambdaLayer',
             code = _lambda.AssetCode('src/layer'),
             compatible_runtimes = [_lambda.Runtime.PYTHON_3_10],
         ) 
         
+        # Create a Lambda that create database/schema/table in the RDS cluster
         table_creator_lambda = triggers.TriggerFunction(self, "MyTrigger",
             runtime=_lambda.Runtime.PYTHON_3_10,
             handler='lambda_handler.handler',

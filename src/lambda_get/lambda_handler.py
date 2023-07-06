@@ -2,7 +2,6 @@ from rds_handler import RDSHandler
 from api_handler import APIHandler
 
 import os
-import json
 import logger
 
 
@@ -21,7 +20,18 @@ def deliver_metric(query):
     
 
 def handler(event, context):
+    """
+    The code defines a Lambda function that handles API requests and retrieves data from an RDS database
+    based on the specified requirements. In this particular case, this Lambda function is used to deliver 
+    the answer requested by excercises 1 and 2 of the technical test.
     
+    :param query: The `query` parameter is a SQL query that will be executed on the RDS database. It is
+    used to retrieve the data needed to construct the metric
+    :return: The `handler` function returns the result of the `deliver_metric` function, which is a
+    response object created by the `api_handler.create_response` method. The response object contains
+    the HTTP status code (200) and the results of the SQL query executed by the
+    `rds_handler.execute_sql` method.
+    """
     if event['queryStringParameters']['requirements'] == 'employees':
         logger.info(f"Construyendo métrica -employees-.")
         return deliver_metric("""
@@ -38,14 +48,14 @@ def handler(event, context):
         GROUP BY d.department, j.job, he.department_id, he.job_id
         ORDER BY department_id ASC, job_id DESC
         """
-        ) 
-        
+        )
+
     elif event['queryStringParameters']['requirements'] == 'ids':
         logger.info(f"Construyendo métrica -ids-.")
         return deliver_metric("""
         SELECT 
             d.id,
-            d.department
+            d.department,
             numero_2022 AS hired
         FROM (
             SELECT 

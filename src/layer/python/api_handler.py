@@ -1,3 +1,4 @@
+
 import json
 
 import logger
@@ -6,8 +7,12 @@ import logger
 logger = logger.setup_logger()
 
 
+.
 class APIHandler:
-
+    """
+    The APIHandler class provides methods for extracting data from an event object and creating a
+    response object
+    """
     def get_data(self, event):
         if "body" in event and event["body"]:
             raw_data = event["body"].split('&')
