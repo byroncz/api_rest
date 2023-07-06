@@ -19,6 +19,7 @@ venv.bak/
 .devcontainer/
 tmp/
 .vscode/
+.vscode/*
 
 # CDK Context & Staging files
 .cdk.staging/
